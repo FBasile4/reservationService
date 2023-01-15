@@ -9,6 +9,8 @@ services:
       POSTGRES_USER: postgres
       POSTGRES_PASSWORD: postgres
       restart: unless-stopped
+    networks:
+      - msgrabbit
 
   app:
     build: .
@@ -18,3 +20,9 @@ services:
       - "8083:8080"
     depends_on:
       - dbpostgresql
+    networks:
+      - msgrabbit
+
+networks:
+  msgrabbit:
+   external: true

@@ -59,5 +59,9 @@ public class Reservation {
     public void setIdBox(String idBox) {
         this.idBox = idBox;
     }
+    @Override
+    public String toString() {
+        return this.getId() + "-" + this.getWorkingact() + "-" + this.getCharityact() + "-" + this.getIdBox();
+    }
 }
 

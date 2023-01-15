@@ -1,0 +1,44 @@
+# ... Deployment YAML definition
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: appres
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: appres
+  template:
+    metadata:
+      labels:
+        app: appres
+    spec:
+      containers:
+      - image: docker.io/basile1/appres:latest
+        name: appres
+        ports:
+          - containerPort: 8083
+        env:
+          - name: SPRING_DATASOURCE_URL
+            value: jdbc:postgresql://postgresql-res:5432/postgresDB?useSSL=false
+          - name: SPRING_DATASOURCE_USERNAME
+            value: postgres
+          - name: SPRING_DATASOURCE_PASSWORD
+            value: postgres
+          - name: SPRING_JPA_HIBERNATE_DDL_AUTO
+            value: update
+        imagePullPolicy: IfNotPresent
+---
+# ... Service YAML definition
+apiVersion: v1
+kind: Service
+metadata:
+  name: appres-service
+spec:
+  ports:
+  - port: 8083
+    protocol: TCP
+    targetPort: 8083
+  selector:
+    app: appres
+  type: ClusterIP

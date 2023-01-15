@@ -1,0 +1,66 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: postgresql-res
+  labels:
+    app: postgresql-res
+    tier: database
+spec:
+  selector:
+    app: postgresql-res
+    tier: database
+  ports:
+    - port: 5432
+      targetPort: 5432
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: postgresql-res
+  labels:
+    app: postgresql-res
+    tier: database
+spec:
+  selector:
+    matchLabels:
+      app: postgresql-res
+  template:
+    metadata:
+      labels:
+        app: postgresql-res
+        tier: database
+    spec:
+      containers:
+        - image: postgres:15
+          name: postgresql-image
+          ports:
+            - containerPort: 5432
+          env:
+            - name: POSTGRES_DB
+              value: postgresDB
+            - name: POSTGRES_USER
+              value: postgres
+            - name: POSTGRES_PASSWORD
+              value: postgres
+          volumeMounts:
+            - name: postegresql-pvc-res
+              mountPath: /var/lib/postgresql/data
+          imagePullPolicy: IfNotPresent
+      volumes:
+        - name: postegresql-pvc-res
+          persistentVolumeClaim:
+            claimName: postgresql-pvc-res
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: postgresql-pvc-res
+  labels:
+    app: postgresql-res
+spec:
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 256Mi
+

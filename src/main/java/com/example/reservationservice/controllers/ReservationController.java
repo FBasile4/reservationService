@@ -2,6 +2,8 @@ package com.example.reservationservice.controllers;
 
 import com.example.reservationservice.models.Reservation;
 import com.example.reservationservice.repositories.ReservationRepository;
+import org.springframework.amqp.core.DirectExchange;
+import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -18,10 +20,16 @@ public class ReservationController {
     @Autowired
     ReservationRepository repository;
 
+    @Autowired
+    private RabbitTemplate rabbitTemplate;
+
+    @Autowired
+    private DirectExchange exchange;
+
     @PostMapping(value = "create")
     public Reservation postReservation(@RequestBody Reservation res) {
+        rabbitTemplate.convertAndSend(exchange.getName(),"routingB", res.toString());
         Reservation _res = repository.save(new Reservation(res.getId(), res.getWorkingact(), res.getCharityact(), res.getIdBox()));
-        System.out.println(_res);
         return _res;
     }
 
